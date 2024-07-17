@@ -12,7 +12,7 @@ open class BlurApplication :
     Application.ActivityLifecycleCallbacks {
     override fun onCreate() {
         super.onCreate()
-        registerActivityLifecycleCallbacks(this)
+//        registerActivityLifecycleCallbacks(this)
     }
 
     override fun onActivityCreated(
