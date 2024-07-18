@@ -21,7 +21,6 @@ abstract class BlurActivity : AppCompatActivity() {
     open fun getBlurView(): View =
         _blurView
             ?: View(this).apply {
-                setBackgroundColor(Color.WHITE)
                 _blurView = this
             }
 
@@ -69,6 +68,11 @@ abstract class BlurActivity : AppCompatActivity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
+            if (isNightMode) {
+                blurView.setBackgroundColor(Color.BLACK)
+            } else {
+                blurView.setBackgroundColor(Color.WHITE)
+            }
         }
     }
 
