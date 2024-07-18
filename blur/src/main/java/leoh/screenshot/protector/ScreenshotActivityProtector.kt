@@ -18,7 +18,7 @@ internal class ScreenshotActivityProtector(
 ) : ViewTreeObserver.OnWindowFocusChangeListener,
     DefaultLifecycleObserver {
     private val contentView: ViewGroup =
-        activity.findViewById<View>(android.R.id.content).rootView as ViewGroup
+        activity.findViewById<View>(android.R.id.content).parent.parent as ViewGroup
     private val blurView = View(activity)
 
     fun protect() {
