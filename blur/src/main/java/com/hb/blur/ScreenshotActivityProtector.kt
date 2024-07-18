@@ -3,14 +3,15 @@ package com.hb.blur
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-
-private const val TAG = "ScreenshotProtector"
+import com.hb.blur.navigation.isGesture
 
 internal class ScreenshotActivityProtector(
     private val activity: ComponentActivity,
@@ -20,6 +21,13 @@ internal class ScreenshotActivityProtector(
     private val blurView = View(activity)
 
     fun protect() {
+        if (activity.isGesture) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                activity.setRecentsScreenshotEnabled(false)
+            } else {
+                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            }
+        }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
     }
