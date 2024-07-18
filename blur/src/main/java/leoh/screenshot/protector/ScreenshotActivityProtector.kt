@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import leoh.screenshot.protector.navigation.OSUtils
 import leoh.screenshot.protector.navigation.isGesture
 
 internal class ScreenshotActivityProtector(
@@ -24,7 +25,7 @@ internal class ScreenshotActivityProtector(
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.setRecentsScreenshotEnabled(false)
-        } else if (activity.isGesture) {
+        } else if (OSUtils.isPixel() || activity.isGesture) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)

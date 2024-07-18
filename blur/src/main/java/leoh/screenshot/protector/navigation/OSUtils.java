@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 /**
  * copy from https://github.com/gyf-dev/ImmersionBar
  */
-class OSUtils {
+public class OSUtils {
     private static final String KEY_MIUI_VERSION_NAME = "ro.miui.ui.version.name";
     private static final String KEY_EMUI_VERSION_NAME = "ro.build.version.emui";
 
@@ -137,6 +137,10 @@ class OSUtils {
     public static boolean isColorOs() {
         String property = getSystemProperty("ro.build.version.opporom");
         return !TextUtils.isEmpty(property);
+    }
+
+    public static boolean isPixel() {
+        return Build.MANUFACTURER.equalsIgnoreCase("Google");
     }
 
     /**
