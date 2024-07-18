@@ -22,12 +22,10 @@ internal class ScreenshotActivityProtector(
     private val blurView = View(activity)
 
     fun protect() {
-        if (activity.isGesture) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                activity.setRecentsScreenshotEnabled(false)
-            } else {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity.setRecentsScreenshotEnabled(false)
+        } else if (activity.isGesture) {
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
