@@ -1,4 +1,4 @@
-package com.hb.blur
+package leoh.screenshot.protector
 
 import androidx.activity.ComponentActivity
 

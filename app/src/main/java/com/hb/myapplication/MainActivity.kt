@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.hb.blur.ScreenshotProtector
+import leoh.screenshot.protector.ScreenshotProtector
 
 private const val TAG = "MainActivity"
 

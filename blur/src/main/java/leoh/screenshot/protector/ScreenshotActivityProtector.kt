@@ -1,4 +1,4 @@
-package com.hb.blur
+package leoh.screenshot.protector
 
 import android.content.Context
 import android.content.res.Configuration
@@ -11,7 +11,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.hb.blur.navigation.isGesture
+import leoh.screenshot.protector.navigation.isGesture
 
 internal class ScreenshotActivityProtector(
     private val activity: ComponentActivity,

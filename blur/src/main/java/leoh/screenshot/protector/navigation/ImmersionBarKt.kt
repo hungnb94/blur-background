@@ -1,4 +1,4 @@
-package com.hb.blur.navigation
+package leoh.screenshot.protector.navigation
 
 import android.content.Context
 

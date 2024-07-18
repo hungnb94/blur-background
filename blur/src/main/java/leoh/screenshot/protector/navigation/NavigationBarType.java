@@ -1,4 +1,4 @@
-package com.hb.blur.navigation;
+package leoh.screenshot.protector.navigation;
 
 /**
  * copy from https://github.com/gyf-dev/ImmersionBar
