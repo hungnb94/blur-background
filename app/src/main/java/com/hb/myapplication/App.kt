@@ -1,7 +1,7 @@
 package com.hb.myapplication
 
-import com.hb.blur.BlurApplication
+import android.app.Application
 
 private const val TAG = "MyApplication"
 
-class App : BlurApplication()
+class App : Application()

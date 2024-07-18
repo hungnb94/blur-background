@@ -1,24 +1,23 @@
 package com.hb.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.hb.blur.BlurActivity
 import com.hb.blur.ScreenshotProtector
 
 private const val TAG = "MainActivity"
 
-class MainActivity : BlurActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
-    private lateinit var screenshotProtector: ScreenshotProtector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        screenshotProtector = ScreenshotProtector(this)
-//        screenshotProtector.startProtect()
+        ScreenshotProtector.protect(this)
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -30,6 +29,6 @@ class MainActivity : BlurActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        screenshotProtector.stopProtect()
+        Log.d(TAG, "onDestroy")
     }
 }
