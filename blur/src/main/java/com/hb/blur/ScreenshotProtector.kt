@@ -1,6 +1,6 @@
 package com.hb.blur
 
-import androidx.core.app.ComponentActivity
+import androidx.activity.ComponentActivity
 
 object ScreenshotProtector {
     fun protect(activity: ComponentActivity) {
