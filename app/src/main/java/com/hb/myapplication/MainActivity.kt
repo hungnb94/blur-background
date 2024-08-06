@@ -10,19 +10,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import leoh.screenshot.protector.ScreenshotActivityProtector
 import leoh.screenshot.protector.ScreenshotProtector
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var screenshotProtector: ScreenshotActivityProtector
+    private lateinit var screenshotProtector: ScreenshotProtector
     private lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        screenshotProtector = ScreenshotProtector.protect(this)
+        screenshotProtector = ScreenshotProtector(this)
+        screenshotProtector.protect()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
