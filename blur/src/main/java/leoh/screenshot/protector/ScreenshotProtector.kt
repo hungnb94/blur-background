@@ -1,16 +1,16 @@
 package leoh.screenshot.protector
 
-import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowManager
+import android.view.inspector.WindowInspector
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import leoh.screenshot.protector.navigation.OSUtils
@@ -22,7 +22,16 @@ class ScreenshotProtector(
     private val activity: ComponentActivity,
 ) : ViewTreeObserver.OnWindowFocusChangeListener,
     DefaultLifecycleObserver {
-    private var blurDialog: Dialog? = null
+    private val contentView: ViewGroup
+        get() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val decorViews = WindowInspector.getGlobalWindowViews()
+                if (decorViews.isNotEmpty()) {
+                    return decorViews.first().rootView as ViewGroup
+                }
+            }
+            return activity.window.decorView as ViewGroup
+        }
     private val blurView = View(activity)
 
     fun protect() {
@@ -31,22 +40,13 @@ class ScreenshotProtector(
         } else if (OSUtils.isPixel() || activity.isGesture) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
-        activity.window.decorView.viewTreeObserver
-            .addOnWindowFocusChangeListener(this)
+        contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
-        blurDialog =
-            AlertDialog
-                .Builder(activity, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen)
-//                .Builder(activity, R.style.FullScreenDialog)
-                .setView(blurView)
-                .create()
     }
 
     private fun release() {
-        activity.window.decorView.viewTreeObserver
-            .removeOnWindowFocusChangeListener(this)
+        contentView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
         activity.lifecycle.removeObserver(this)
-        blurDialog?.dismiss()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -67,6 +67,18 @@ class ScreenshotProtector(
         }
     }
 
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        Log.d(TAG, "onResume $owner")
+        hideBlurView()
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
+        Log.d(TAG, "onPause: $owner")
+        showBlurView()
+    }
+
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         Log.d(TAG, "onDestroy: $owner")
@@ -75,20 +87,24 @@ class ScreenshotProtector(
 
     private fun showBlurView() {
         Log.d(TAG, "showBlurView")
-        if (blurDialog?.isShowing != true) {
+        if (blurView.parent == null) {
+            contentView.addView(
+                blurView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
             if (activity.isNightMode) {
                 blurView.setBackgroundColor(Color.BLACK)
             } else {
                 blurView.setBackgroundColor(Color.WHITE)
             }
-            blurDialog?.show()
         }
     }
 
     private fun hideBlurView() {
         Log.d(TAG, "hideBlurView")
-        if (blurDialog?.isShowing == true) {
-            blurDialog?.dismiss()
+        if (blurView.parent != null) {
+            contentView.removeView(blurView)
         }
     }
 }
