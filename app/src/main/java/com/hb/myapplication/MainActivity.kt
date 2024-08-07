@@ -16,7 +16,6 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
     private lateinit var screenshotProtector: ScreenshotProtector
     private lateinit var textView: TextView
-    private lateinit var protector: ScreenshotProtector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

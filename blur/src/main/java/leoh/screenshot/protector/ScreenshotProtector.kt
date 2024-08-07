@@ -16,7 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import leoh.screenshot.protector.navigation.OSUtils
 import leoh.screenshot.protector.navigation.isGesture
 
-private const val TAG = "ScreenshotActivityProtector"
+private const val TAG = "ScreenshotProtector"
 
 class ScreenshotProtector(
     private val activity: ComponentActivity,
