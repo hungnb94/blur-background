@@ -29,6 +29,14 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         textView = findViewById(R.id.tvMessage)
+        textView.setOnClickListener {
+            showConfirmationDialog()
+//            startActivity(Intent(this, MainActivity::class.java))
+        }
+//        showConfirmationDialog()
+    }
+
+    private fun showConfirmationDialog() {
         ConfirmationDialogFragment().show(supportFragmentManager, ConfirmationDialogFragment.TAG)
     }
 
