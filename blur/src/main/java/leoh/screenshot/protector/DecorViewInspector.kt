@@ -33,6 +33,8 @@ class DecorViewInspector private constructor() {
             }
         }
         decorViewInfos.removeAll { !windowViews.contains(it.decorView) }
-        return decorViewInfos.firstOrNull { it.decorView.hasWindowFocus() } ?: decorViewInfos.lastOrNull()
+        return decorViewInfos.firstOrNull { it.decorView.hasWindowFocus() }
+            ?: decorViewInfos.lastOrNull { it.decorView != it.activity?.window?.decorView }
+            ?: decorViewInfos.lastOrNull()
     }
 }
