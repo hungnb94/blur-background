@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -36,9 +37,9 @@ class ScreenshotProtector(
 
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            activity.setRecentsScreenshotEnabled(false)
+            activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
-//            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         blurDialogView.viewTreeObserver.addOnWindowFocusChangeListener(this)
@@ -170,19 +171,19 @@ class ScreenshotProtector(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                 )
             val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
-//            if (viewInfo?.isActivityDecorView == false) {
-//            Log.d(TAG, "showBlurView: on dialog")
-            (viewInfo?.decorView as ViewGroup).addView(
-                blurDialogView,
+            if (viewInfo?.isActivityDecorView == false) {
+                Log.d(TAG, "showBlurView: on dialog")
+                (viewInfo.decorView as ViewGroup).addView(
+                    blurDialogView,
+                    params,
+                )
+                blurDialogView.setBackgroundColor(backgroundColor)
+            }
+            (activity.window.decorView as ViewGroup).addView(
+                blurActivityView,
                 params,
             )
-            blurDialogView.setBackgroundColor(backgroundColor)
-//            }
-//            (activity.window.decorView as ViewGroup).addView(
-//                blurActivityView,
-//                params,
-//            )
-//            blurActivityView.setBackgroundColor(backgroundColor)
+            blurActivityView.setBackgroundColor(backgroundColor)
         }
         logWindows()
     }
@@ -190,7 +191,7 @@ class ScreenshotProtector(
     private fun hideBlurView() {
         Log.d(TAG, "hideBlurView")
         (blurDialogView.parent as ViewGroup?)?.removeView(blurDialogView)
-//        (blurActivityView.parent as ViewGroup?)?.removeView(blurActivityView)
+        (blurActivityView.parent as ViewGroup?)?.removeView(blurActivityView)
     }
 }
 
