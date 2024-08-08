@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             showConfirmationDialog()
 //            startActivity(Intent(this, MainActivity::class.java))
         }
-//        showConfirmationDialog()
+        showConfirmationDialog()
     }
 
     private fun showConfirmationDialog() {
