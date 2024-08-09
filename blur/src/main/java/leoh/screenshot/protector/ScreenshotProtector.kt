@@ -24,7 +24,8 @@ private const val TAG = "ScreenshotProtector"
 @RequiresApi(Build.VERSION_CODES.Q)
 class ScreenshotProtector(
     private val activity: ComponentActivity,
-) : ViewTreeObserver.OnWindowFocusChangeListener,
+) : IScreenshotProtector,
+    ViewTreeObserver.OnWindowFocusChangeListener,
     DefaultLifecycleObserver {
     private val contentView: ViewGroup
         get() {
@@ -35,7 +36,7 @@ class ScreenshotProtector(
     private val decorViews = mutableListOf<WeakReference<View>>()
     private var decorViewRestoreInfo: DecorViewRestoreInfo? = null
 
-    fun protect() {
+    override fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
@@ -103,15 +104,6 @@ class ScreenshotProtector(
                 }
             }
         decorView.viewTreeObserver.addOnWindowAttachListener(detachListener)
-    }
-
-    fun onTopResumedActivityChanged(topResumedActivity: Boolean) {
-        Log.d(TAG, "onTopResumedActivityChanged: $topResumedActivity")
-        if (topResumedActivity) {
-            hideBlurView()
-        } else {
-            showBlurView()
-        }
     }
 
     private fun logWindows() {

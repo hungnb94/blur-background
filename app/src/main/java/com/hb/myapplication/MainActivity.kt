@@ -1,6 +1,7 @@
 package com.hb.myapplication
 
 import android.app.Dialog
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -9,18 +10,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
+import leoh.screenshot.protector.IScreenshotProtector
 import leoh.screenshot.protector.ScreenshotProtector
+import leoh.screenshot.protector.SimpleScreenshotProtector
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var screenshotProtector: ScreenshotProtector
+    private lateinit var screenshotProtector: IScreenshotProtector
     private lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        screenshotProtector = ScreenshotProtector(this)
+        screenshotProtector =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ScreenshotProtector(this)
+            } else {
+                SimpleScreenshotProtector(this)
+            }
         screenshotProtector.protect()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -38,11 +46,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showConfirmationDialog() {
         ConfirmationDialogFragment().show(supportFragmentManager, ConfirmationDialogFragment.TAG)
-    }
-
-    override fun onTopResumedActivityChanged(isTopResumedActivity: Boolean) {
-        super.onTopResumedActivityChanged(isTopResumedActivity)
-        screenshotProtector.onTopResumedActivityChanged(isTopResumedActivity)
     }
 }
 
