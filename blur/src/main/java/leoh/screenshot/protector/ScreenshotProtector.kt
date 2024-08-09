@@ -189,8 +189,9 @@ class ScreenshotProtector(
         viewInfo: DecorViewInfo,
         backgroundColor: Int,
     ) {
-        layoutParams.width = LayoutParams.MATCH_PARENT
-        layoutParams.height = LayoutParams.MATCH_PARENT
+        val type = layoutParams.type
+        layoutParams.copyFrom(activity.window.decorView.layoutParams as LayoutParams)
+        layoutParams.type = type
         viewInfo.decorView.setBackgroundColor(backgroundColor)
         activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
     }
