@@ -31,7 +31,7 @@ class ScreenshotProtector(
     private val blurView = View(activity)
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
-    private var sourceDecorViewInfo: SourceDecorViewInfo? = null
+    private var decorViewRestoreInfo: DecorViewRestoreInfo? = null
 
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -169,16 +169,16 @@ class ScreenshotProtector(
         val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
         if (viewInfo?.activity == activity && !viewInfo.isActivityDecorView) {
             Log.d(TAG, "showBlurView: on dialog")
-            val sourceLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
-            sourceDecorViewInfo =
-                SourceDecorViewInfo(
+            val originLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
+            decorViewRestoreInfo =
+                DecorViewRestoreInfo(
                     decorView = viewInfo.decorView,
-                    layoutParams = sourceLayoutParams.clone(),
+                    layoutParams = originLayoutParams.clone(),
                     background = viewInfo.decorView.background,
                 )
-            makeDialogFullscreen(sourceLayoutParams.clone(), viewInfo, backgroundColor)
+            makeDialogFullscreen(originLayoutParams.clone(), viewInfo, backgroundColor)
         } else {
-            sourceDecorViewInfo = null
+            decorViewRestoreInfo = null
         }
         viewInfo?.decorView?.addView(blurView, params)
         blurView.setBackgroundColor(backgroundColor)
@@ -209,7 +209,7 @@ class ScreenshotProtector(
         if (parentBlurView != null) {
             (parentBlurView as ViewGroup).removeView(blurView)
 
-            sourceDecorViewInfo?.let {
+            decorViewRestoreInfo?.let {
                 it.decorView.background = it.background
                 activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
             }
