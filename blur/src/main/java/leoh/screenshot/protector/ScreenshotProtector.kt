@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -31,24 +31,22 @@ class ScreenshotProtector(
             return activity.window.decorView as ViewGroup
         }
     private val blurDialogView = View(activity)
-    private val blurActivityView = View(activity)
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
+    private var dialogDecorViewInfo: DialogDecorViewInfo? = null
 
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity.setRecentsScreenshotEnabled(false)
+//            activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
-            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
-        blurDialogView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
     }
 
     private fun release() {
         contentView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
-        blurDialogView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
         activity.lifecycle.removeObserver(this)
     }
 
@@ -158,40 +156,61 @@ class ScreenshotProtector(
 
     private fun showBlurView() {
         Log.d(TAG, "showBlurView")
-        if (blurDialogView.parent == null && blurActivityView.parent == null) {
-            val backgroundColor =
-                if (activity.isNightMode) {
-                    Color.BLACK
-                } else {
-                    Color.WHITE
-                }
-            val params =
-                ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                )
-            val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
-            if (viewInfo?.isActivityDecorView == false) {
-                Log.d(TAG, "showBlurView: on dialog")
-                (viewInfo.decorView as ViewGroup).addView(
-                    blurDialogView,
-                    params,
-                )
-                blurDialogView.setBackgroundColor(backgroundColor)
-            }
-            (activity.window.decorView as ViewGroup).addView(
-                blurActivityView,
-                params,
-            )
-            blurActivityView.setBackgroundColor(backgroundColor)
+        if (blurDialogView.parent == null) {
+            addBlurView()
         }
-        logWindows()
     }
+
+    private fun addBlurView() {
+        val backgroundColor = getThemeBackgroundColor()
+        val params =
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+        val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
+        if (viewInfo?.isActivityDecorView == false) {
+            Log.d(TAG, "showBlurView: on dialog")
+            val sourceLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
+            dialogDecorViewInfo =
+                DialogDecorViewInfo(
+                    decorView = viewInfo.decorView,
+                    layoutParams = sourceLayoutParams.clone(),
+                    background = viewInfo.decorView.background,
+                )
+            sourceLayoutParams.width = LayoutParams.MATCH_PARENT
+            sourceLayoutParams.height = LayoutParams.MATCH_PARENT
+            viewInfo.decorView.setBackgroundColor(backgroundColor)
+            activity.windowManager.updateViewLayout(viewInfo.decorView, sourceLayoutParams)
+        } else {
+            dialogDecorViewInfo = null
+        }
+        (viewInfo?.decorView as ViewGroup).addView(
+            blurDialogView,
+            params,
+        )
+        blurDialogView.setBackgroundColor(backgroundColor)
+    }
+
+    private fun getThemeBackgroundColor() =
+        if (activity.isNightMode) {
+            Color.BLACK
+        } else {
+            Color.WHITE
+        }
 
     private fun hideBlurView() {
         Log.d(TAG, "hideBlurView")
-        (blurDialogView.parent as ViewGroup?)?.removeView(blurDialogView)
-        (blurActivityView.parent as ViewGroup?)?.removeView(blurActivityView)
+        val parentBlurView = blurDialogView.parent
+        if (parentBlurView != null) {
+            (parentBlurView as ViewGroup).removeView(blurDialogView)
+
+            dialogDecorViewInfo?.let {
+                it.decorView.background = it.background
+                activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
+                Log.d(TAG, "dialogLayoutParams: $dialogDecorViewInfo")
+            }
+        }
     }
 }
 
@@ -200,3 +219,9 @@ val Context.isNightMode: Boolean
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
     }
+
+fun LayoutParams.clone(): LayoutParams {
+    val clone = LayoutParams(this.type)
+    clone.copyFrom(this)
+    return clone
+}
