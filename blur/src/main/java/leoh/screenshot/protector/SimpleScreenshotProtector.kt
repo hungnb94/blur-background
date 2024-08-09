@@ -4,7 +4,7 @@ import android.os.Build
 import android.view.WindowManager.LayoutParams
 import androidx.activity.ComponentActivity
 
-class SimpleScreenshotProtector(
+internal class SimpleScreenshotProtector(
     private val activity: ComponentActivity,
 ) : IScreenshotProtector {
     override fun protect() {

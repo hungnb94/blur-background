@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 private const val TAG = "ScreenshotProtector"
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class ScreenshotProtector(
+internal class ScreenshotProtector(
     private val activity: ComponentActivity,
 ) : IScreenshotProtector,
     ViewTreeObserver.OnWindowFocusChangeListener,

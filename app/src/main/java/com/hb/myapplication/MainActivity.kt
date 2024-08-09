@@ -11,26 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
-import leoh.screenshot.protector.IScreenshotProtector
-import leoh.screenshot.protector.ScreenshotProtector
-import leoh.screenshot.protector.SimpleScreenshotProtector
-
-private const val TAG = "MainActivity"
+import leoh.screenshot.protector.Protector
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var screenshotProtector: IScreenshotProtector
     private lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        screenshotProtector =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ScreenshotProtector(this)
-            } else {
-                SimpleScreenshotProtector(this)
-            }
-        screenshotProtector.protect()
+        Protector.protect(this)
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -43,7 +32,13 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(Intent(this, MainActivity::class.java))
         }
         showConfirmationDialog()
-        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        textView.postDelayed({ requestOnePermission() }, 200)
+    }
+
+    private fun requestOnePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
     }
 
     private fun showConfirmationDialog() {
