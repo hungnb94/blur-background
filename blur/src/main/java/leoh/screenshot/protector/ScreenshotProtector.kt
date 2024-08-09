@@ -35,9 +35,9 @@ class ScreenshotProtector(
 
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            activity.setRecentsScreenshotEnabled(false)
+            activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
-//            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            activity.window.addFlags(LayoutParams.FLAG_SECURE)
         }
         contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
