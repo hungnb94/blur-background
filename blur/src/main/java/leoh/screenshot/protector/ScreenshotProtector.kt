@@ -1,7 +1,5 @@
 package leoh.screenshot.protector
 
-import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
@@ -30,10 +28,10 @@ class ScreenshotProtector(
         get() {
             return activity.window.decorView as ViewGroup
         }
-    private val blurDialogView = View(activity)
+    private val blurView = View(activity)
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
-    private var dialogDecorViewInfo: DialogDecorViewInfo? = null
+    private var sourceDecorViewInfo: SourceDecorViewInfo? = null
 
     fun protect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -156,7 +154,7 @@ class ScreenshotProtector(
 
     private fun showBlurView() {
         Log.d(TAG, "showBlurView")
-        if (blurDialogView.parent == null) {
+        if (blurView.parent == null) {
             addBlurView()
         }
     }
@@ -169,27 +167,32 @@ class ScreenshotProtector(
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
         val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
-        if (viewInfo?.isActivityDecorView == false) {
+        if (viewInfo?.activity == activity && !viewInfo.isActivityDecorView) {
             Log.d(TAG, "showBlurView: on dialog")
             val sourceLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
-            dialogDecorViewInfo =
-                DialogDecorViewInfo(
+            sourceDecorViewInfo =
+                SourceDecorViewInfo(
                     decorView = viewInfo.decorView,
                     layoutParams = sourceLayoutParams.clone(),
                     background = viewInfo.decorView.background,
                 )
-            sourceLayoutParams.width = LayoutParams.MATCH_PARENT
-            sourceLayoutParams.height = LayoutParams.MATCH_PARENT
-            viewInfo.decorView.setBackgroundColor(backgroundColor)
-            activity.windowManager.updateViewLayout(viewInfo.decorView, sourceLayoutParams)
+            makeDialogFullscreen(sourceLayoutParams.clone(), viewInfo, backgroundColor)
         } else {
-            dialogDecorViewInfo = null
+            sourceDecorViewInfo = null
         }
-        (viewInfo?.decorView as ViewGroup).addView(
-            blurDialogView,
-            params,
-        )
-        blurDialogView.setBackgroundColor(backgroundColor)
+        viewInfo?.decorView?.addView(blurView, params)
+        blurView.setBackgroundColor(backgroundColor)
+    }
+
+    private fun makeDialogFullscreen(
+        layoutParams: LayoutParams,
+        viewInfo: DecorViewInfo,
+        backgroundColor: Int,
+    ) {
+        layoutParams.width = LayoutParams.MATCH_PARENT
+        layoutParams.height = LayoutParams.MATCH_PARENT
+        viewInfo.decorView.setBackgroundColor(backgroundColor)
+        activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
     }
 
     private fun getThemeBackgroundColor() =
@@ -201,24 +204,17 @@ class ScreenshotProtector(
 
     private fun hideBlurView() {
         Log.d(TAG, "hideBlurView")
-        val parentBlurView = blurDialogView.parent
+        val parentBlurView = blurView.parent
         if (parentBlurView != null) {
-            (parentBlurView as ViewGroup).removeView(blurDialogView)
+            (parentBlurView as ViewGroup).removeView(blurView)
 
-            dialogDecorViewInfo?.let {
+            sourceDecorViewInfo?.let {
                 it.decorView.background = it.background
                 activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
-                Log.d(TAG, "dialogLayoutParams: $dialogDecorViewInfo")
             }
         }
     }
 }
-
-val Context.isNightMode: Boolean
-    get() {
-        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
-    }
 
 fun LayoutParams.clone(): LayoutParams {
     val clone = LayoutParams(this.type)
