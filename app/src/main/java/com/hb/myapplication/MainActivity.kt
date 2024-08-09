@@ -1,5 +1,6 @@
 package com.hb.myapplication
 
+import android.Manifest
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(Intent(this, MainActivity::class.java))
         }
         showConfirmationDialog()
+        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
     }
 
     private fun showConfirmationDialog() {
