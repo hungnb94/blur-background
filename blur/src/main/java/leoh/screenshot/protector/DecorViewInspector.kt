@@ -3,6 +3,7 @@ package leoh.screenshot.protector
 import android.os.Build
 import android.view.ViewGroup
 import android.view.inspector.WindowInspector
+import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -26,10 +27,11 @@ class DecorViewInspector private constructor() {
         return decorViewInfos.toList()
     }
 
-    fun getFocusedDecorViewInfo(): DecorViewInfo? {
+    fun getFocusedDecorViewInfo(activity: ComponentActivity): DecorViewInfo? {
         getDecorViewInfos()
-        return decorViewInfos.firstOrNull { it.decorView.hasWindowFocus() }
-            ?: decorViewInfos.lastOrNull { it.decorView != it.activity?.window?.decorView }
-            ?: decorViewInfos.lastOrNull()
+        val activityDecorViews = decorViewInfos.filter { it.activity == activity }
+        return activityDecorViews.firstOrNull { it.decorView.hasWindowFocus() }
+            ?: activityDecorViews.lastOrNull { it.decorView != it.activity?.window?.decorView }
+            ?: activityDecorViews.lastOrNull()
     }
 }
