@@ -11,6 +11,8 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import leoh.screenshot.protector.extension.clone
+import leoh.screenshot.protector.extension.isNightMode
 import leoh.screenshot.protector.listener.OnDecorViewDetachListener
 import leoh.screenshot.protector.listener.OnDecorViewFocusChangeListener
 import leoh.screenshot.protector.navigation.OSUtils
@@ -215,10 +217,4 @@ class ScreenshotProtector(
             }
         }
     }
-}
-
-fun LayoutParams.clone(): LayoutParams {
-    val clone = LayoutParams(this.type)
-    clone.copyFrom(this)
-    return clone
 }

@@ -2,6 +2,7 @@ package leoh.screenshot.protector
 
 import android.app.Activity
 import android.view.ViewGroup
+import leoh.screenshot.protector.extension.activity
 
 data class DecorViewInfo(
     val decorView: ViewGroup,
