@@ -56,7 +56,7 @@ internal class ScreenshotProtector(
         if (hasFocus) {
             hideBlurView()
         } else {
-            val topDecorView = decorViewInspector.getFocusedDecorViewInfo()
+            val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity)
             if (topDecorView != null) {
                 if (topDecorView.activity == activity) {
                     if (topDecorView.decorView == activity.window.decorView) {
@@ -160,7 +160,7 @@ internal class ScreenshotProtector(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
-        val viewInfo = decorViewInspector.getFocusedDecorViewInfo()
+        val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity)
         if (viewInfo?.activity == activity && !viewInfo.isActivityDecorView) {
             Log.d(TAG, "showBlurView: on dialog")
             val originLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
