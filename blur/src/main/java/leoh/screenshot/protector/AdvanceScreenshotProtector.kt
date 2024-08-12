@@ -172,8 +172,10 @@ internal class AdvanceScreenshotProtector(
         } else {
             decorViewRestoreInfo = null
         }
-        viewInfo?.decorView?.addView(blurView, params)
-        blurView.setBackgroundColor(backgroundColor)
+        if (viewInfo != null) {
+            viewInfo.decorView.addView(blurView, params)
+            blurView.setBackgroundColor(backgroundColor)
+        }
     }
 
     private fun makeDialogFullscreen(
