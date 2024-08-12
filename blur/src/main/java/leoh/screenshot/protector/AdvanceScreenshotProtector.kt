@@ -71,7 +71,6 @@ internal class AdvanceScreenshotProtector(
                 }
             }
         }
-        logWindows()
     }
 
     private fun manageDialogListener(viewInfo: DecorViewInfo) {
@@ -130,14 +129,12 @@ internal class AdvanceScreenshotProtector(
                 manageDialogListener(info)
             }
         }
-        logWindows()
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Log.d(TAG, "onPause: $owner")
         showBlurView()
-        logWindows()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -147,7 +144,8 @@ internal class AdvanceScreenshotProtector(
     }
 
     private fun showBlurView() {
-        Log.d(TAG, "showBlurView")
+        Log.d(TAG, "showBlurView $activity")
+        logWindows()
         if (blurView.parent == null) {
             addBlurView()
         }
@@ -198,7 +196,8 @@ internal class AdvanceScreenshotProtector(
         }
 
     private fun hideBlurView() {
-        Log.d(TAG, "hideBlurView")
+        Log.d(TAG, "hideBlurView $activity")
+        logWindows()
         val parentBlurView = blurView.parent
         if (parentBlurView != null) {
             (parentBlurView as ViewGroup).removeView(blurView)
