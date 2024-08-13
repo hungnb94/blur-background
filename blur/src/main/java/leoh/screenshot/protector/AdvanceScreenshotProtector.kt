@@ -34,6 +34,7 @@ internal class AdvanceScreenshotProtector(
     private var decorViewRestoreInfo: DecorViewRestoreInfo? = null
 
     override fun protect() {
+        Log.d(TAG, "protect: $activity")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
@@ -56,7 +57,7 @@ internal class AdvanceScreenshotProtector(
             val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity)
             if (topDecorView != null) {
                 if (topDecorView.activity == activity) {
-                    if (topDecorView.decorView == activityDecorView) {
+                    if (topDecorView.decorView == activityDecorView && !activity.isFinishing) {
                         Log.d(TAG, "Activity is losing focus")
                         showBlurView()
                     } else {
@@ -84,7 +85,7 @@ internal class AdvanceScreenshotProtector(
                     Log.d(TAG, "onDecorViewFocusChanged: view=$decorView, focus=$hasFocus")
                     if (hasFocus) {
                         hideBlurView()
-                    } else {
+                    } else if (!activity.isFinishing) {
                         showBlurView()
                     }
                 }
@@ -131,7 +132,9 @@ internal class AdvanceScreenshotProtector(
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Log.d(TAG, "onPause: $owner")
-        showBlurView()
+        if (!activity.isFinishing) {
+            showBlurView()
+        }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
