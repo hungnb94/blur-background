@@ -1,9 +1,9 @@
 package leoh.screenshot.protector
 
+import android.app.Activity
 import android.os.Build
 import android.view.ViewGroup
 import android.view.inspector.WindowInspector
-import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -14,21 +14,15 @@ class DecorViewInspector private constructor() {
         fun getInstance() = instance ?: DecorViewInspector().apply { instance = this }
     }
 
-    fun getDecorViewInfos(): List<DecorViewInfo> {
-        val decorViewInfos = mutableListOf<DecorViewInfo>()
+    fun getDecorViewInfos(activity: Activity): List<DecorViewInfo> {
         val windowViews = WindowInspector.getGlobalWindowViews()
-        for (windowView in windowViews) {
-            if (!decorViewInfos.any { it.decorView == windowView }) {
-                decorViewInfos.add(DecorViewInfo(windowView as ViewGroup))
-            }
-        }
-        decorViewInfos.removeAll { !windowViews.contains(it.decorView) }
-        return decorViewInfos.toList()
+        return windowViews
+            .map { DecorViewInfo(it as ViewGroup) }
+            .filter { it.activity == activity }
     }
 
-    fun getFocusedDecorViewInfo(activity: ComponentActivity): DecorViewInfo? {
-        val decorViewInfos = getDecorViewInfos()
-        val activityDecorViews = decorViewInfos.filter { it.activity == activity }
+    fun getFocusedDecorViewInfo(activity: Activity): DecorViewInfo? {
+        val activityDecorViews = getDecorViewInfos(activity)
         return activityDecorViews.firstOrNull { it.decorView.hasWindowFocus() }
             ?: activityDecorViews.lastOrNull { it.decorView != it.activity?.window?.decorView }
             ?: activityDecorViews.lastOrNull()

@@ -27,10 +27,7 @@ internal class AdvanceScreenshotProtector(
 ) : IScreenshotProtector,
     ViewTreeObserver.OnWindowFocusChangeListener,
     DefaultLifecycleObserver {
-    private val contentView: ViewGroup
-        get() {
-            return activity.window.decorView as ViewGroup
-        }
+    private val activityDecorView: ViewGroup by lazy { activity.window.decorView as ViewGroup }
     private val blurView = View(activity)
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
@@ -42,12 +39,12 @@ internal class AdvanceScreenshotProtector(
         } else if (OSUtils.isPixel() || activity.isGesture) {
             activity.window.addFlags(LayoutParams.FLAG_SECURE)
         }
-        contentView.viewTreeObserver.addOnWindowFocusChangeListener(this)
+        activityDecorView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
     }
 
     private fun release() {
-        contentView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
+        activityDecorView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
         activity.lifecycle.removeObserver(this)
     }
 
@@ -59,7 +56,7 @@ internal class AdvanceScreenshotProtector(
             val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity)
             if (topDecorView != null) {
                 if (topDecorView.activity == activity) {
-                    if (topDecorView.decorView == activity.window.decorView) {
+                    if (topDecorView.decorView == activityDecorView) {
                         Log.d(TAG, "Activity is losing focus")
                         showBlurView()
                     } else {
@@ -108,9 +105,9 @@ internal class AdvanceScreenshotProtector(
     private fun logWindows() {
         Log.d(
             TAG,
-            "Activity: activity=$activity, decor=${activity.window.decorView}, focus=${activity.window.decorView.hasWindowFocus()}",
+            "Activity: activity=$activity, decor=$activityDecorView, focus=${activityDecorView.hasWindowFocus()}",
         )
-        val decorViews = decorViewInspector.getDecorViewInfos()
+        val decorViews = decorViewInspector.getDecorViewInfos(activity)
         for (view in decorViews) {
             Log.d(
                 TAG,
@@ -123,9 +120,9 @@ internal class AdvanceScreenshotProtector(
         super.onResume(owner)
         Log.d(TAG, "onResume $owner")
         hideBlurView()
-        val viewInfos = decorViewInspector.getDecorViewInfos()
+        val viewInfos = decorViewInspector.getDecorViewInfos(activity)
         for (info in viewInfos) {
-            if (!info.isActivityDecorView) {
+            if (info.decorView != activityDecorView) {
                 manageDialogListener(info)
             }
         }
@@ -159,7 +156,7 @@ internal class AdvanceScreenshotProtector(
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
         val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity)
-        if (viewInfo?.activity == activity && !viewInfo.isActivityDecorView) {
+        if (viewInfo != null && viewInfo.decorView != activityDecorView) {
             Log.d(TAG, "showBlurView: on dialog")
             val originLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
             decorViewRestoreInfo =
@@ -172,7 +169,7 @@ internal class AdvanceScreenshotProtector(
         } else {
             decorViewRestoreInfo = null
         }
-        if (viewInfo != null) {
+        if (viewInfo != null && viewInfo.decorView is ViewGroup) {
             viewInfo.decorView.addView(blurView, params)
             blurView.setBackgroundColor(backgroundColor)
         }
@@ -184,7 +181,7 @@ internal class AdvanceScreenshotProtector(
         backgroundColor: Int,
     ) {
         val type = layoutParams.type
-        layoutParams.copyFrom(activity.window.decorView.layoutParams as LayoutParams)
+        layoutParams.copyFrom(activityDecorView.layoutParams as LayoutParams)
         layoutParams.type = type
         viewInfo.decorView.setBackgroundColor(backgroundColor)
         activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
