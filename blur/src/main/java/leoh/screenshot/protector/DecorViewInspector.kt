@@ -8,8 +8,6 @@ import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class DecorViewInspector private constructor() {
-    private val decorViewInfos = mutableListOf<DecorViewInfo>()
-
     companion object {
         private var instance: DecorViewInspector? = null
 
@@ -17,6 +15,7 @@ class DecorViewInspector private constructor() {
     }
 
     fun getDecorViewInfos(): List<DecorViewInfo> {
+        val decorViewInfos = mutableListOf<DecorViewInfo>()
         val windowViews = WindowInspector.getGlobalWindowViews()
         for (windowView in windowViews) {
             if (!decorViewInfos.any { it.decorView == windowView }) {
@@ -28,7 +27,7 @@ class DecorViewInspector private constructor() {
     }
 
     fun getFocusedDecorViewInfo(activity: ComponentActivity): DecorViewInfo? {
-        getDecorViewInfos()
+        val decorViewInfos = getDecorViewInfos()
         val activityDecorViews = decorViewInfos.filter { it.activity == activity }
         return activityDecorViews.firstOrNull { it.decorView.hasWindowFocus() }
             ?: activityDecorViews.lastOrNull { it.decorView != it.activity?.window?.decorView }
