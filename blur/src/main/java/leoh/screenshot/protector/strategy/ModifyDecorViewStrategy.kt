@@ -1,6 +1,7 @@
 package leoh.screenshot.protector.strategy
 
 import android.app.Activity
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
@@ -14,6 +15,10 @@ class ModifyDecorViewStrategy(
 ) : BlurStrategy(activity) {
     override val blurView: View = View(activity)
     private var dialogRestoreInfo: DecorViewRestoreInfo? = null
+
+    companion object {
+        private const val TAG = "ModifyDecorViewStrategy"
+    }
 
     override fun showBlur(viewInfo: DecorViewInfo) {
         if (blurView.parent == null) {
@@ -56,9 +61,13 @@ class ModifyDecorViewStrategy(
         viewInfo: DecorViewInfo,
         backgroundColor: Int,
     ) {
+        Log.d(
+            TAG,
+            "setDialogFullscreen: view=$viewInfo, layoutParams=${viewInfo.decorView.layoutParams}",
+        )
         val layoutParams = viewInfo.decorView.layoutParams as LayoutParams
         val type = layoutParams.type
-        layoutParams.copyFrom(activity.window.attributes)
+        layoutParams.copyFrom(activity.window.decorView.layoutParams as LayoutParams)
         layoutParams.type = type
         viewInfo.decorView.setBackgroundColor(backgroundColor)
         activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
@@ -81,9 +90,10 @@ class ModifyDecorViewStrategy(
 
     private fun restoreDialogDecorView() {
         dialogRestoreInfo?.let {
+            Log.d(TAG, "restoreDialogDecorView: $dialogRestoreInfo")
             it.decorView.background = it.background
             activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
+            dialogRestoreInfo = null
         }
-        dialogRestoreInfo = null
     }
 }
