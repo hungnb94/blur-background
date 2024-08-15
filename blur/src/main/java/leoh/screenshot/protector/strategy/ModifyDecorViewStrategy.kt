@@ -65,7 +65,7 @@ class ModifyDecorViewStrategy(
             TAG,
             "setDialogFullscreen: view=$viewInfo, layoutParams=${viewInfo.decorView.layoutParams}",
         )
-        val layoutParams = viewInfo.decorView.layoutParams as LayoutParams
+        val layoutParams = (viewInfo.decorView.layoutParams as LayoutParams).clone()
         val type = layoutParams.type
         layoutParams.copyFrom(activity.window.decorView.layoutParams as LayoutParams)
         layoutParams.type = type
@@ -83,8 +83,8 @@ class ModifyDecorViewStrategy(
     override fun hideBlur() {
         val parentBlurView = blurView.parent
         if (parentBlurView != null && parentBlurView is ViewManager) {
-            restoreDialogDecorView()
             parentBlurView.removeView(blurView)
+            restoreDialogDecorView()
         }
     }
 
