@@ -5,7 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,7 +15,9 @@ import leoh.screenshot.protector.extension.isNightMode
 import java.util.Random
 
 open class MainActivity : AppCompatActivity() {
-    lateinit var textView: TextView
+    private lateinit var btnShowDialog: Button
+    private lateinit var btnRequestPermission: Button
+    private lateinit var btnStartActivity: Button
     private lateinit var container: ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +32,16 @@ open class MainActivity : AppCompatActivity() {
             insets
         }
         container.setBackgroundColor(randomBackgroundColor())
-        textView = findViewById(R.id.tvMessage)
-        textView.setOnClickListener {
+        btnShowDialog = findViewById(R.id.btnShowDialog)
+        btnRequestPermission = findViewById(R.id.btnRequestPermission)
+        btnStartActivity = findViewById(R.id.btnStartActivity)
+        btnShowDialog.setOnClickListener {
+            showConfirmationDialog()
+        }
+        btnRequestPermission.setOnClickListener {
+            requestOnePermission()
+        }
+        btnStartActivity.setOnClickListener {
             startActivity(Intent(this, SecondActivity::class.java))
             finish()
         }
