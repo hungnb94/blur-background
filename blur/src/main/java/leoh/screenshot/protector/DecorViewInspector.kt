@@ -2,7 +2,6 @@ package leoh.screenshot.protector
 
 import android.app.Activity
 import android.os.Build
-import android.view.ViewGroup
 import android.view.inspector.WindowInspector
 import androidx.annotation.RequiresApi
 
@@ -17,7 +16,7 @@ class DecorViewInspector private constructor() {
     fun getDecorViewInfos(activity: Activity): List<DecorViewInfo> {
         val windowViews = WindowInspector.getGlobalWindowViews()
         return windowViews
-            .map { DecorViewInfo(it as ViewGroup) }
+            .map { DecorViewInfo(it) }
             .filter { it.activity == activity }
     }
 

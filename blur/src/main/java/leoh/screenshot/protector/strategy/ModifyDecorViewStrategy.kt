@@ -1,6 +1,7 @@
 package leoh.screenshot.protector.strategy
 
 import android.app.Activity
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
 import android.view.WindowManager.LayoutParams
@@ -11,6 +12,7 @@ import leoh.screenshot.protector.extension.clone
 class ModifyDecorViewStrategy(
     activity: Activity,
 ) : BlurStrategy(activity) {
+    override val blurView: View = View(activity)
     private var dialogRestoreInfo: DecorViewRestoreInfo? = null
 
     override fun showBlur(viewInfo: DecorViewInfo) {

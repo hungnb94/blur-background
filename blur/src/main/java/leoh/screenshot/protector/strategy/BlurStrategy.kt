@@ -9,7 +9,7 @@ import leoh.screenshot.protector.extension.isNightMode
 abstract class BlurStrategy(
     val activity: Activity,
 ) {
-    val blurView = View(activity)
+    abstract val blurView: View
 
     abstract fun showBlur(viewInfo: DecorViewInfo)
 
