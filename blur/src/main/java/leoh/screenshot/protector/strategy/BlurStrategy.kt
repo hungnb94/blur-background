@@ -24,6 +24,4 @@ abstract class BlurStrategy(
         } else {
             Color.WHITE
         }
-
-    fun isDialog(viewInfo: DecorViewInfo): Boolean = viewInfo.decorView != activity.window.decorView
 }

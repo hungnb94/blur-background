@@ -115,7 +115,7 @@ internal class AdvanceScreenshotProtector(
         hideBlurView()
         val viewInfos = decorViewInspector.getDecorViewInfos(activity)
         for (info in viewInfos) {
-            if (info.decorView != activityDecorView) {
+            if (info.isDialog) {
                 manageDialogEvents(info)
             }
         }

@@ -35,7 +35,7 @@ class ModifyDecorViewStrategy(
         viewInfo: DecorViewInfo,
         backgroundColor: Int,
     ) {
-        if (viewInfo.decorView != activity.window.decorView) {
+        if (viewInfo.isDialog) {
             dialogRestoreInfo = getDialogInfo(viewInfo)
             setDialogFullscreen(
                 viewInfo = viewInfo,

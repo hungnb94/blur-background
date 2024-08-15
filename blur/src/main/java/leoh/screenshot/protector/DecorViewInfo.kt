@@ -10,4 +10,6 @@ data class DecorViewInfo(
 ) {
     private val contentView: ViewGroup? by lazy { decorView.findViewById(android.R.id.content) }
     val activity: Activity? by lazy { decorView.activity ?: contentView?.activity }
+    val isDialog: Boolean
+        get() = activity != null && decorView != activity?.window?.decorView
 }
