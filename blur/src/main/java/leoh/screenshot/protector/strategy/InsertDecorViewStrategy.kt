@@ -14,7 +14,8 @@ import leoh.screenshot.protector.DecorViewInfo
 class InsertDecorViewStrategy(
     activity: Activity,
 ) : BlurStrategy(activity),
-    ViewTreeObserver.OnWindowFocusChangeListener {
+    ViewTreeObserver.OnWindowFocusChangeListener,
+    ViewTreeObserver.OnWindowAttachListener {
     override val blurView: View = FrameLayout(activity)
 
     override fun showBlur(viewInfo: DecorViewInfo) {
@@ -29,6 +30,7 @@ class InsertDecorViewStrategy(
         activity.windowManager.addView(blurView, params)
         blurView.setBackgroundColor(backgroundColor)
         blurView.viewTreeObserver.addOnWindowFocusChangeListener(this)
+        blurView.viewTreeObserver.addOnWindowAttachListener(this)
     }
 
     private fun matchParentLayoutParams(): LayoutParams {
@@ -42,7 +44,7 @@ class InsertDecorViewStrategy(
 
     override fun hideBlur() {
         if (isShowing) {
-            blurView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
+            removeViewListeners()
             activity.windowManager.removeView(blurView)
         }
     }
@@ -52,6 +54,20 @@ class InsertDecorViewStrategy(
         if (hasFocus) {
             hideBlur()
         }
+    }
+
+    override fun onWindowAttached() {
+        // do nothing
+    }
+
+    override fun onWindowDetached() {
+        Log.d(TAG, "onWindowDetached")
+        removeViewListeners()
+    }
+
+    private fun removeViewListeners() {
+        blurView.viewTreeObserver.removeOnWindowFocusChangeListener(this)
+        blurView.viewTreeObserver.removeOnWindowAttachListener(this)
     }
 
     companion object {
