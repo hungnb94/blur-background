@@ -15,7 +15,7 @@ import leoh.screenshot.protector.listener.OnDecorViewFocusChangeListener
 import leoh.screenshot.protector.navigation.OSUtils
 import leoh.screenshot.protector.navigation.isGesture
 import leoh.screenshot.protector.strategy.BlurStrategy
-import leoh.screenshot.protector.strategy.InsertDecorViewStrategy
+import leoh.screenshot.protector.strategy.ModifyDecorViewStrategy
 import java.lang.ref.WeakReference
 
 private const val TAG = "ScreenshotProtector"
@@ -29,7 +29,7 @@ internal class AdvanceScreenshotProtector(
     private val activityDecorView: ViewGroup by lazy { activity.window.decorView as ViewGroup }
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
-    private val blurStrategy: BlurStrategy = InsertDecorViewStrategy(activity)
+    private val blurStrategy: BlurStrategy = ModifyDecorViewStrategy(activity)
 
     override fun protect() {
         Log.d(TAG, "protect: $activity")
