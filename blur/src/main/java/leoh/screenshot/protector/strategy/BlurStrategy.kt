@@ -13,7 +13,10 @@ abstract class BlurStrategy(
 
     abstract fun showBlur(viewInfo: DecorViewInfo)
 
-    abstract fun hideBlur(viewInfo: DecorViewInfo)
+    abstract fun hideBlur()
+
+    val isShowing: Boolean
+        get() = blurView.parent != null
 
     fun getThemeBackgroundColor() =
         if (activity.isNightMode) {

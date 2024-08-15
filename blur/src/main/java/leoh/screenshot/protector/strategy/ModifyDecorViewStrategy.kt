@@ -11,7 +11,7 @@ import leoh.screenshot.protector.extension.clone
 class ModifyDecorViewStrategy(
     activity: Activity,
 ) : BlurStrategy(activity) {
-    private var decorViewRestoreInfo: DecorViewRestoreInfo? = null
+    private var dialogRestoreInfo: DecorViewRestoreInfo? = null
 
     override fun showBlur(viewInfo: DecorViewInfo) {
         if (blurView.parent == null) {
@@ -21,23 +21,40 @@ class ModifyDecorViewStrategy(
 
     private fun addBlurView(viewInfo: DecorViewInfo) {
         val backgroundColor = getThemeBackgroundColor()
-        val params =
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-//        makeDialogFullscreenIfNeeded(viewInfo)
+        val params = matchParentLayoutParams()
+        makeDialogFullscreenIfNeeded(viewInfo, backgroundColor)
         if (viewInfo.decorView is ViewManager) {
             viewInfo.decorView.addView(blurView, params)
             blurView.setBackgroundColor(backgroundColor)
         }
     }
 
-    private fun setDialogFullscreen(
-        layoutParams: LayoutParams,
+    private fun makeDialogFullscreenIfNeeded(
         viewInfo: DecorViewInfo,
         backgroundColor: Int,
     ) {
+        if (viewInfo.decorView != activity.window.decorView) {
+            dialogRestoreInfo = getDialogInfo(viewInfo)
+            setDialogFullscreen(
+                viewInfo = viewInfo,
+                backgroundColor = backgroundColor,
+            )
+        } else {
+            dialogRestoreInfo = null
+        }
+    }
+
+    private fun matchParentLayoutParams() =
+        ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
+
+    private fun setDialogFullscreen(
+        viewInfo: DecorViewInfo,
+        backgroundColor: Int,
+    ) {
+        val layoutParams = viewInfo.decorView.layoutParams as LayoutParams
         val type = layoutParams.type
         layoutParams.copyFrom(activity.window.attributes)
         layoutParams.type = type
@@ -45,16 +62,14 @@ class ModifyDecorViewStrategy(
         activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
     }
 
-    private fun saveDialogInfo(viewInfo: DecorViewInfo) {
-        decorViewRestoreInfo =
-            DecorViewRestoreInfo(
-                decorView = viewInfo.decorView,
-                layoutParams = (viewInfo.decorView.layoutParams as LayoutParams).clone(),
-                background = viewInfo.decorView.background,
-            )
-    }
+    private fun getDialogInfo(viewInfo: DecorViewInfo): DecorViewRestoreInfo =
+        DecorViewRestoreInfo(
+            decorView = viewInfo.decorView,
+            layoutParams = (viewInfo.decorView.layoutParams as LayoutParams).clone(),
+            background = viewInfo.decorView.background,
+        )
 
-    override fun hideBlur(viewInfo: DecorViewInfo) {
+    override fun hideBlur() {
         val parentBlurView = blurView.parent
         if (parentBlurView != null && parentBlurView is ViewManager) {
             restoreDialogDecorView()
@@ -63,10 +78,10 @@ class ModifyDecorViewStrategy(
     }
 
     private fun restoreDialogDecorView() {
-        decorViewRestoreInfo?.let {
+        dialogRestoreInfo?.let {
             it.decorView.background = it.background
             activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
         }
-        decorViewRestoreInfo = null
+        dialogRestoreInfo = null
     }
 }

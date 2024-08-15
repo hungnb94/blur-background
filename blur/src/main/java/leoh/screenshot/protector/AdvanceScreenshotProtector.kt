@@ -1,6 +1,5 @@
 package leoh.screenshot.protector
 
-import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -11,12 +10,12 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import leoh.screenshot.protector.extension.clone
-import leoh.screenshot.protector.extension.isNightMode
 import leoh.screenshot.protector.listener.OnDecorViewDetachListener
 import leoh.screenshot.protector.listener.OnDecorViewFocusChangeListener
 import leoh.screenshot.protector.navigation.OSUtils
 import leoh.screenshot.protector.navigation.isGesture
+import leoh.screenshot.protector.strategy.BlurStrategy
+import leoh.screenshot.protector.strategy.ModifyDecorViewStrategy
 import java.lang.ref.WeakReference
 
 private const val TAG = "ScreenshotProtector"
@@ -28,10 +27,9 @@ internal class AdvanceScreenshotProtector(
     ViewTreeObserver.OnWindowFocusChangeListener,
     DefaultLifecycleObserver {
     private val activityDecorView: ViewGroup by lazy { activity.window.decorView as ViewGroup }
-    private val blurView = View(activity)
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
-    private var decorViewRestoreInfo: DecorViewRestoreInfo? = null
+    private val blurStrategy: BlurStrategy = ModifyDecorViewStrategy(activity)
 
     override fun protect() {
         Log.d(TAG, "protect: $activity")
@@ -54,24 +52,18 @@ internal class AdvanceScreenshotProtector(
         if (hasFocus) {
             hideBlurView()
         } else {
-            val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity)
-            if (topDecorView != null) {
-                if (topDecorView.activity == activity) {
-                    if (topDecorView.decorView == activityDecorView && !activity.isFinishing) {
-                        Log.d(TAG, "Activity is losing focus")
-                        showBlurView()
-                    } else {
-                        Log.d(TAG, "Activity show dialog")
-                        manageDialogListener(topDecorView)
-                    }
-                } else {
-                    Log.d(TAG, "Opening another activity")
-                }
+            val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
+            if (topDecorView.decorView == activityDecorView && !activity.isFinishing) {
+                Log.d(TAG, "Activity is losing focus")
+                showBlurView()
+            } else {
+                Log.d(TAG, "Activity show dialog")
+                manageDialogEvents(topDecorView)
             }
         }
     }
 
-    private fun manageDialogListener(viewInfo: DecorViewInfo) {
+    private fun manageDialogEvents(viewInfo: DecorViewInfo) {
         val decorView = viewInfo.decorView
         if (decorViews.any { it.get() === decorView }) return
         decorViews.add(WeakReference(decorView))
@@ -124,7 +116,7 @@ internal class AdvanceScreenshotProtector(
         val viewInfos = decorViewInspector.getDecorViewInfos(activity)
         for (info in viewInfos) {
             if (info.decorView != activityDecorView) {
-                manageDialogListener(info)
+                manageDialogEvents(info)
             }
         }
     }
@@ -146,68 +138,17 @@ internal class AdvanceScreenshotProtector(
     private fun showBlurView() {
         Log.d(TAG, "showBlurView $activity")
         logWindows()
-        if (blurView.parent == null) {
-            addBlurView()
+        if (!blurStrategy.isShowing) {
+            val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
+            blurStrategy.showBlur(viewInfo)
         }
     }
-
-    private fun addBlurView() {
-        val backgroundColor = getThemeBackgroundColor()
-        val params =
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-        val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity)
-        if (viewInfo != null && viewInfo.decorView != activityDecorView) {
-            Log.d(TAG, "showBlurView: on dialog")
-            val originLayoutParams = viewInfo.decorView.layoutParams as LayoutParams
-            decorViewRestoreInfo =
-                DecorViewRestoreInfo(
-                    decorView = viewInfo.decorView,
-                    layoutParams = originLayoutParams.clone(),
-                    background = viewInfo.decorView.background,
-                )
-            makeDialogFullscreen(originLayoutParams.clone(), viewInfo, backgroundColor)
-        } else {
-            decorViewRestoreInfo = null
-        }
-        if (viewInfo != null && viewInfo.decorView is ViewGroup) {
-            viewInfo.decorView.addView(blurView, params)
-            blurView.setBackgroundColor(backgroundColor)
-        }
-    }
-
-    private fun makeDialogFullscreen(
-        layoutParams: LayoutParams,
-        viewInfo: DecorViewInfo,
-        backgroundColor: Int,
-    ) {
-        val type = layoutParams.type
-        layoutParams.copyFrom(activityDecorView.layoutParams as LayoutParams)
-        layoutParams.type = type
-        viewInfo.decorView.setBackgroundColor(backgroundColor)
-        activity.windowManager.updateViewLayout(viewInfo.decorView, layoutParams)
-    }
-
-    private fun getThemeBackgroundColor() =
-        if (activity.isNightMode) {
-            Color.BLACK
-        } else {
-            Color.WHITE
-        }
 
     private fun hideBlurView() {
         Log.d(TAG, "hideBlurView $activity")
         logWindows()
-        val parentBlurView = blurView.parent
-        if (parentBlurView != null) {
-            (parentBlurView as ViewGroup).removeView(blurView)
-
-            decorViewRestoreInfo?.let {
-                it.decorView.background = it.background
-                activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
-            }
+        if (blurStrategy.isShowing) {
+            blurStrategy.hideBlur()
         }
     }
 }

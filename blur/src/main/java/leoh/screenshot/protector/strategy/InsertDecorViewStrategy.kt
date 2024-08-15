@@ -9,6 +9,6 @@ class InsertDecorViewStrategy(
     override fun showBlur(viewInfo: DecorViewInfo) {
     }
 
-    override fun hideBlur(viewInfo: DecorViewInfo) {
+    override fun hideBlur() {
     }
 }
