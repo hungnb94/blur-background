@@ -17,7 +17,7 @@ class DecorViewInspector private constructor() {
         val windowViews = WindowInspector.getGlobalWindowViews()
         return windowViews
             .map { DecorViewInfo(it) }
-            .filter { it.activity == activity }
+            .filter { it.activity == activity && !it.isToast }
     }
 
     fun getFocusedDecorViewInfo(activity: Activity): DecorViewInfo? {
