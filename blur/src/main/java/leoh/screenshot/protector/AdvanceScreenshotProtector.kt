@@ -98,13 +98,13 @@ internal class AdvanceScreenshotProtector(
     private fun logWindows() {
         Log.d(
             TAG,
-            "Activity: activity=$activity, decor=$activityDecorView, focus=${activityDecorView.hasWindowFocus()}",
+            "Activity: activity=$activity, focus=${activityDecorView.hasWindowFocus()}, decor=$activityDecorView, attrs=${activityDecorView.layoutParams}",
         )
         val decorViews = decorViewInspector.getDecorViewInfos(activity)
         for (view in decorViews) {
             Log.d(
                 TAG,
-                "Window:   activity=${view.activity}, decor=${view.decorView}, focus=${view.decorView.hasWindowFocus()}",
+                "Window:   activity=${view.activity}, focus=${view.decorView.hasWindowFocus()}, decor=${view.decorView}, attrs=${view.decorView.layoutParams}",
             )
         }
     }

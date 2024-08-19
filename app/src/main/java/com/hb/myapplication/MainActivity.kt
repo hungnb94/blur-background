@@ -10,12 +10,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import es.dmoral.toasty.Toasty
 import leoh.screenshot.protector.ScreenshotProtector
 import leoh.screenshot.protector.extension.isNightMode
 import java.util.Random
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var btnShowDialog: Button
+    private lateinit var btnToastMessage: Button
     private lateinit var btnRequestPermission: Button
     private lateinit var btnStartActivity: Button
     private lateinit var container: ViewGroup
@@ -33,10 +35,14 @@ open class MainActivity : AppCompatActivity() {
         }
         container.setBackgroundColor(randomBackgroundColor())
         btnShowDialog = findViewById(R.id.btnShowDialog)
+        btnToastMessage = findViewById(R.id.btnToastMessage)
         btnRequestPermission = findViewById(R.id.btnRequestPermission)
         btnStartActivity = findViewById(R.id.btnStartActivity)
         btnShowDialog.setOnClickListener {
             showConfirmationDialog()
+        }
+        btnToastMessage.setOnClickListener {
+            Toasty.info(this, "Hello world", Toasty.LENGTH_LONG).show()
         }
         btnRequestPermission.setOnClickListener {
             requestOnePermission()
@@ -54,7 +60,11 @@ open class MainActivity : AppCompatActivity() {
             return Color.rgb(rnd.nextInt(range), rnd.nextInt(range), rnd.nextInt(range))
         } else {
             val base = 255 - range
-            return Color.rgb(base + rnd.nextInt(range), base + rnd.nextInt(range), base + rnd.nextInt(range))
+            return Color.rgb(
+                base + rnd.nextInt(range),
+                base + rnd.nextInt(range),
+                base + rnd.nextInt(range),
+            )
         }
     }
 

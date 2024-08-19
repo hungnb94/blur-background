@@ -25,10 +25,19 @@
         android:id="@+id/btnShowDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/btnRequestPermission"
+        android:layout_above="@id/btnToastMessage"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:text="Show dialog" />
+
+    <Button
+        android:id="@+id/btnToastMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btnRequestPermission"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:text="Show toast message" />
 
     <Button
         android:id="@+id/btnRequestPermission"
