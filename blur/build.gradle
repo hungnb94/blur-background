@@ -1,7 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("maven-publish")
 }
+
+group = "${GROUP_ID}"
+version = "${PUBLISH_VERSION}"
 
 android {
     namespace 'com.hb.blur'
@@ -34,4 +38,17 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "${GROUP_ID}"
+                artifactId = "${ARTIFACT_ID}"
+                version = "${PUBLISH_VERSION}"
+            }
+        }
+    }
 }
