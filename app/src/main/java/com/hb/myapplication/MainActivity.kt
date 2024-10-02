@@ -1,13 +1,17 @@
 package com.hb.myapplication
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import es.dmoral.toasty.Toasty
@@ -19,6 +23,7 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var btnShowDialog: Button
     private lateinit var btnToastMessage: Button
     private lateinit var btnRequestPermission: Button
+    private lateinit var btnEnableBluetooth: Button
     private lateinit var btnStartActivity: Button
     private lateinit var container: ViewGroup
 
@@ -37,6 +42,7 @@ open class MainActivity : AppCompatActivity() {
         btnShowDialog = findViewById(R.id.btnShowDialog)
         btnToastMessage = findViewById(R.id.btnToastMessage)
         btnRequestPermission = findViewById(R.id.btnRequestPermission)
+        btnEnableBluetooth = findViewById(R.id.btnEnableBluetooth)
         btnStartActivity = findViewById(R.id.btnStartActivity)
         btnShowDialog.setOnClickListener {
             showConfirmationDialog()
@@ -46,6 +52,18 @@ open class MainActivity : AppCompatActivity() {
         }
         btnRequestPermission.setOnClickListener {
             requestOnePermission()
+        }
+        btnEnableBluetooth.setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivityForResult(intent, 1)
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
+            }
         }
         btnStartActivity.setOnClickListener {
             startActivity(Intent(this, SecondActivity::class.java))

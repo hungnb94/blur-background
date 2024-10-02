@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/btnToastMessage"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:text="Show dialog" />
 
     <Button
@@ -36,17 +36,26 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/btnRequestPermission"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:text="Show toast message" />
 
     <Button
         android:id="@+id/btnRequestPermission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@id/btnEnableBluetooth"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="Request permission" />
+
+    <Button
+        android:id="@+id/btnEnableBluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@id/btnStartActivity"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="Request permission" />
+        android:layout_marginBottom="10dp"
+        android:text="Enable bluetooth" />
 
     <Button
         android:id="@+id/btnStartActivity"
@@ -54,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:text="Start second activity" />
 
 </RelativeLayout>
