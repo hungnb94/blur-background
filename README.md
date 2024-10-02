@@ -11,8 +11,9 @@ Hide app content in [Android Recent Apps](https://developer.android.com/guide/co
 ```groovy
 allprojects {
     repositories {
-        ...
-        maven { url = uri('https://jitpack.io') }
+        google()
+        mavenCentral()
+        maven { url = uri('https://jitpack.io') } // Add this line
     }
 }
 ```
@@ -21,7 +22,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'com.github.hungnb94:blur-background:[LATEST_VERSION]'
+    implementation("com.github.hungnb94:blur-background:[LATEST_VERSION]")
 }
 ```
 
