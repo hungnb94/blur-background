@@ -1,5 +1,8 @@
 package leoh.screenshot.protector
 
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -10,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import leoh.screenshot.protector.listener.MonitorListener
 import leoh.screenshot.protector.listener.OnDecorViewDetachListener
 import leoh.screenshot.protector.listener.OnDecorViewFocusChangeListener
 import leoh.screenshot.protector.navigation.OSUtils
@@ -17,6 +21,7 @@ import leoh.screenshot.protector.navigation.isGesture
 import leoh.screenshot.protector.strategy.BlurStrategy
 import leoh.screenshot.protector.strategy.ModifyDecorViewStrategy
 import java.lang.ref.WeakReference
+import java.lang.reflect.Field
 
 private const val TAG = "ScreenshotProtector"
 
@@ -25,11 +30,16 @@ internal class AdvanceScreenshotProtector(
     private val activity: ComponentActivity,
 ) : IScreenshotProtector,
     ViewTreeObserver.OnWindowFocusChangeListener,
-    DefaultLifecycleObserver {
+    DefaultLifecycleObserver,
+    MonitorListener {
     private val activityDecorView: ViewGroup by lazy { activity.window.decorView as ViewGroup }
     private val decorViewInspector = DecorViewInspector.getInstance()
     private val decorViews = mutableListOf<WeakReference<View>>()
     private val blurStrategy: BlurStrategy = ModifyDecorViewStrategy(activity)
+    private var instrumentation: Instrumentation? = null
+    private val activityMonitor = Monitor(this)
+    private val intentHandler = IntentHandler(activity.packageName)
+    private var shouldIgnore = false
 
     override fun protect() {
         Log.d(TAG, "protect: $activity")
@@ -40,6 +50,18 @@ internal class AdvanceScreenshotProtector(
         }
         activityDecorView.viewTreeObserver.addOnWindowFocusChangeListener(this)
         activity.lifecycle.addObserver(this)
+        instrumentation = getInstrumentation(activity)
+    }
+
+    private fun getInstrumentation(activity: ComponentActivity): Instrumentation? {
+        try {
+            val field: Field = Activity::class.java.getDeclaredField("mInstrumentation")
+            field.isAccessible = true
+            return field.get(activity) as Instrumentation?
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return null
+        }
     }
 
     private fun release() {
@@ -119,6 +141,8 @@ internal class AdvanceScreenshotProtector(
                 manageDialogEvents(info)
             }
         }
+        shouldIgnore = false
+        instrumentation?.addMonitor(activityMonitor)
     }
 
     override fun onPause(owner: LifecycleOwner) {
@@ -127,6 +151,7 @@ internal class AdvanceScreenshotProtector(
         if (!activity.isFinishing) {
             showBlurView()
         }
+        instrumentation?.removeMonitor(activityMonitor)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -136,19 +161,23 @@ internal class AdvanceScreenshotProtector(
     }
 
     private fun showBlurView() {
-        Log.d(TAG, "showBlurView $activity")
         logWindows()
-        if (!blurStrategy.isShowing) {
+        if (!blurStrategy.isShowing && !shouldIgnore) {
+            Log.d(TAG, "showBlurView $activity")
             val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
             blurStrategy.showBlur(viewInfo)
         }
     }
 
     private fun hideBlurView() {
-        Log.d(TAG, "hideBlurView $activity")
         logWindows()
         if (blurStrategy.isShowing) {
+            Log.d(TAG, "hideBlurView $activity")
             blurStrategy.hideBlur()
         }
+    }
+
+    override fun onStartActivity(intent: Intent?) {
+        shouldIgnore = (intent != null && intentHandler.checkWhiteList(intent))
     }
 }
