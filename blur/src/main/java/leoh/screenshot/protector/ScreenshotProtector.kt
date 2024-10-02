@@ -2,6 +2,8 @@ package leoh.screenshot.protector
 
 import android.os.Build
 import androidx.activity.ComponentActivity
+import leoh.screenshot.protector.log.DefaultLogger
+import leoh.screenshot.protector.log.Logger
 
 object ScreenshotProtector {
     @JvmStatic
@@ -12,4 +14,7 @@ object ScreenshotProtector {
             SimpleScreenshotProtector(activity).protect()
         }
     }
+
+    @JvmStatic
+    var logger: Logger = DefaultLogger()
 }

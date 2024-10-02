@@ -1,13 +1,13 @@
 package leoh.screenshot.protector.strategy
 
 import android.app.Activity
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
 import android.view.WindowManager.LayoutParams
 import leoh.screenshot.protector.DecorViewInfo
 import leoh.screenshot.protector.DecorViewRestoreInfo
+import leoh.screenshot.protector.ScreenshotProtector.logger
 import leoh.screenshot.protector.extension.clone
 
 class ModifyDecorViewStrategy(
@@ -61,7 +61,7 @@ class ModifyDecorViewStrategy(
         viewInfo: DecorViewInfo,
         backgroundColor: Int,
     ) {
-        Log.d(
+        logger.d(
             TAG,
             "setDialogFullscreen: view=$viewInfo, layoutParams=${viewInfo.decorView.layoutParams}",
         )
@@ -90,7 +90,7 @@ class ModifyDecorViewStrategy(
 
     private fun restoreDialogDecorView() {
         dialogRestoreInfo?.let {
-            Log.d(TAG, "restoreDialogDecorView: $dialogRestoreInfo")
+            logger.d(TAG, "restoreDialogDecorView: $dialogRestoreInfo")
             it.decorView.background = it.background
             activity.windowManager.updateViewLayout(it.decorView, it.layoutParams)
             dialogRestoreInfo = null

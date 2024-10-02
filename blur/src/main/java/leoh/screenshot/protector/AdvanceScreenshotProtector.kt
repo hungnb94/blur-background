@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -13,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import leoh.screenshot.protector.ScreenshotProtector.logger
 import leoh.screenshot.protector.listener.MonitorListener
 import leoh.screenshot.protector.listener.OnDecorViewDetachListener
 import leoh.screenshot.protector.listener.OnDecorViewFocusChangeListener
@@ -42,7 +42,7 @@ internal class AdvanceScreenshotProtector(
     private var shouldIgnore = false
 
     override fun protect() {
-        Log.d(TAG, "protect: $activity")
+        logger.d(TAG, "protect: $activity")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.setRecentsScreenshotEnabled(false)
         } else if (OSUtils.isPixel() || activity.isGesture) {
@@ -70,16 +70,16 @@ internal class AdvanceScreenshotProtector(
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
-        Log.d(TAG, "onWindowFocusChanged: $hasFocus")
+        logger.d(TAG, "onWindowFocusChanged: $hasFocus")
         if (hasFocus) {
             hideBlurView()
         } else {
             val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
             if (topDecorView.decorView == activityDecorView && !activity.isFinishing) {
-                Log.d(TAG, "Activity is losing focus")
+                logger.d(TAG, "Activity is losing focus")
                 showBlurView()
             } else {
-                Log.d(TAG, "Activity show dialog")
+                logger.d(TAG, "Activity show dialog")
                 manageDialogEvents(topDecorView)
             }
         }
@@ -96,7 +96,7 @@ internal class AdvanceScreenshotProtector(
                     view: View,
                     hasFocus: Boolean,
                 ) {
-                    Log.d(TAG, "onDecorViewFocusChanged: view=$decorView, focus=$hasFocus")
+                    logger.d(TAG, "onDecorViewFocusChanged: view=$decorView, focus=$hasFocus")
                     if (hasFocus) {
                         hideBlurView()
                     } else if (!activity.isFinishing) {
@@ -108,7 +108,7 @@ internal class AdvanceScreenshotProtector(
         val detachListener =
             object : OnDecorViewDetachListener(decorView) {
                 override fun onDecorViewDetached(view: View) {
-                    Log.d(TAG, "onDecorViewDetached: $view")
+                    logger.d(TAG, "onDecorViewDetached: $view")
                     view.viewTreeObserver.removeOnWindowFocusChangeListener(focusChangeListener)
                     view.viewTreeObserver.removeOnWindowAttachListener(this)
                     decorViews.removeAll { it.get() == null || it.get() == view }
@@ -118,13 +118,13 @@ internal class AdvanceScreenshotProtector(
     }
 
     private fun logWindows() {
-        Log.d(
+        logger.d(
             TAG,
             "Activity: activity=$activity, focus=${activityDecorView.hasWindowFocus()}, decor=$activityDecorView, attrs=${activityDecorView.layoutParams}",
         )
         val decorViews = decorViewInspector.getDecorViewInfos(activity)
         for (view in decorViews) {
-            Log.d(
+            logger.d(
                 TAG,
                 "Window:   activity=${view.activity}, focus=${view.decorView.hasWindowFocus()}, decor=${view.decorView}, attrs=${view.decorView.layoutParams}",
             )
@@ -133,7 +133,7 @@ internal class AdvanceScreenshotProtector(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        Log.d(TAG, "onResume $owner")
+        logger.d(TAG, "onResume $owner")
         hideBlurView()
         val viewInfos = decorViewInspector.getDecorViewInfos(activity)
         for (info in viewInfos) {
@@ -147,7 +147,7 @@ internal class AdvanceScreenshotProtector(
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        Log.d(TAG, "onPause: $owner")
+        logger.d(TAG, "onPause: $owner")
         if (!activity.isFinishing) {
             showBlurView()
         }
@@ -156,24 +156,32 @@ internal class AdvanceScreenshotProtector(
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        Log.d(TAG, "onDestroy: $owner")
+        logger.d(TAG, "onDestroy: $owner")
         release()
     }
 
     private fun showBlurView() {
         logWindows()
         if (!blurStrategy.isShowing && !shouldIgnore) {
-            Log.d(TAG, "showBlurView $activity")
+            logger.d(TAG, "showBlurView $activity")
             val viewInfo = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
-            blurStrategy.showBlur(viewInfo)
+            try {
+                blurStrategy.showBlur(viewInfo)
+            } catch (ex: Exception) {
+                logger.e(TAG, "Can not show blur view", ex)
+            }
         }
     }
 
     private fun hideBlurView() {
         logWindows()
         if (blurStrategy.isShowing) {
-            Log.d(TAG, "hideBlurView $activity")
-            blurStrategy.hideBlur()
+            logger.d(TAG, "hideBlurView $activity")
+            try {
+                blurStrategy.hideBlur()
+            } catch (ex: Exception) {
+                logger.e(TAG, "Can not hide blur view", ex)
+            }
         }
     }
 

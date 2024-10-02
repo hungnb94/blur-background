@@ -2,13 +2,13 @@ package leoh.screenshot.protector.strategy
 
 import android.app.Activity
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager.LayoutParams
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import leoh.screenshot.protector.DecorViewInfo
+import leoh.screenshot.protector.ScreenshotProtector.logger
 
 @RequiresApi(Build.VERSION_CODES.P)
 class InsertDecorViewStrategy(
@@ -50,7 +50,7 @@ class InsertDecorViewStrategy(
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
-        Log.d(TAG, "onWindowFocusChanged: $hasFocus")
+        logger.d(TAG, "onWindowFocusChanged: $hasFocus")
         if (hasFocus) {
             hideBlur()
         }
@@ -61,7 +61,7 @@ class InsertDecorViewStrategy(
     }
 
     override fun onWindowDetached() {
-        Log.d(TAG, "onWindowDetached")
+        logger.d(TAG, "onWindowDetached")
         removeViewListeners()
     }
 
