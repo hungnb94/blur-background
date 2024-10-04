@@ -134,8 +134,10 @@ internal class AdvanceScreenshotProtector(
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         logger.d(TAG, "onResume $owner")
-        hideBlurView()
         val viewInfos = decorViewInspector.getDecorViewInfos(activity)
+        if (viewInfos.any { it.decorView.hasWindowFocus() }) {
+            hideBlurView()
+        }
         for (info in viewInfos) {
             if (info.isDialog) {
                 manageDialogEvents(info)
