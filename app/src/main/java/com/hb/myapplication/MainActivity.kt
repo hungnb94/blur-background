@@ -24,7 +24,8 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var btnToastMessage: Button
     private lateinit var btnRequestPermission: Button
     private lateinit var btnEnableBluetooth: Button
-    private lateinit var btnStartActivity: Button
+    private lateinit var btnStartActivityDialog: Button
+    private lateinit var btnStartActivityDialogPermission: Button
     private lateinit var container: ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +44,8 @@ open class MainActivity : AppCompatActivity() {
         btnToastMessage = findViewById(R.id.btnToastMessage)
         btnRequestPermission = findViewById(R.id.btnRequestPermission)
         btnEnableBluetooth = findViewById(R.id.btnEnableBluetooth)
-        btnStartActivity = findViewById(R.id.btnStartActivity)
+        btnStartActivityDialog = findViewById(R.id.btnStartActivityDialog)
+        btnStartActivityDialogPermission = findViewById(R.id.btnStartActivityDialogPermission)
         btnShowDialog.setOnClickListener {
             showConfirmationDialog()
         }
@@ -65,9 +67,17 @@ open class MainActivity : AppCompatActivity() {
                 requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 0)
             }
         }
-        btnStartActivity.setOnClickListener {
-            startActivity(Intent(this, SecondActivity::class.java))
-            finish()
+        btnStartActivityDialog.setOnClickListener {
+            btnStartActivityDialog.postDelayed({
+                startActivity(SecondActivity.newIntent(this, showDialog = true, requestPermission = false))
+                finish()
+            }, 2000)
+        }
+        btnStartActivityDialogPermission.setOnClickListener {
+            btnStartActivityDialogPermission.postDelayed({
+                startActivity(SecondActivity.newIntent(this, showDialog = true, requestPermission = true))
+                finish()
+            }, 2000)
         }
     }
 

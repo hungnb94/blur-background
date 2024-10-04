@@ -52,18 +52,27 @@
         android:id="@+id/btnEnableBluetooth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/btnStartActivity"
+        android:layout_above="@id/btnStartActivityDialog"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:text="Enable bluetooth" />
 
     <Button
-        android:id="@+id/btnStartActivity"
+        android:id="@+id/btnStartActivityDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btnStartActivityDialogPermission"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="Start activity with dialog after 2s" />
+
+    <Button
+        android:id="@+id/btnStartActivityDialogPermission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:text="Start second activity" />
+        android:text="Start activity with dialog + request permission after 2s" />
 
 </RelativeLayout>
