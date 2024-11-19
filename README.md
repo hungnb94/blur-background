@@ -22,7 +22,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation("com.github.hungnb94:blur-background:[LATEST_VERSION]")
+    implementation("com.github.hungnb94:blur-background:1.2.1")
 }
 ```
 
