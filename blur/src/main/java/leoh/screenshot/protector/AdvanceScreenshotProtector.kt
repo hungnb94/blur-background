@@ -99,8 +99,15 @@ internal class AdvanceScreenshotProtector(
                     logger.d(TAG, "onDecorViewFocusChanged: view=$decorView, focus=$hasFocus")
                     if (hasFocus) {
                         hideBlurView()
-                    } else if (!activity.isFinishing) {
-                        showBlurView()
+                    } else {
+                        val topDecorView = decorViewInspector.getFocusedDecorViewInfo(activity) ?: return
+                        if (topDecorView.decorView == view) {
+                            logger.d(TAG, "Dialog $view is losing focus")
+                            showBlurView()
+                        } else {
+                            logger.d(TAG, "Activity show another dialog $topDecorView")
+                            manageDialogEvents(topDecorView)
+                        }
                     }
                 }
             }
