@@ -9,11 +9,12 @@ class ConfirmationDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog
             .Builder(requireContext())
-            .setMessage("This is message")
+            .setMessage("Dialog ${++count}")
             .setPositiveButton(android.R.string.ok) { _, _ -> }
             .create()
 
     companion object {
         const val TAG = "PurchaseConfirmationDialog"
+        private var count = 0
     }
 }
