@@ -7,6 +7,9 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -21,12 +24,14 @@ import java.util.Random
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var btnShowDialog: Button
+    private lateinit var btnShowTwoDialogs: Button
     private lateinit var btnToastMessage: Button
     private lateinit var btnRequestPermission: Button
     private lateinit var btnEnableBluetooth: Button
     private lateinit var btnStartActivityDialog: Button
     private lateinit var btnStartActivityDialogPermission: Button
     private lateinit var container: ViewGroup
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +46,7 @@ open class MainActivity : AppCompatActivity() {
         }
         container.setBackgroundColor(randomBackgroundColor())
         btnShowDialog = findViewById(R.id.btnShowDialog)
+        btnShowTwoDialogs = findViewById(R.id.btnShowTwoDialogs)
         btnToastMessage = findViewById(R.id.btnToastMessage)
         btnRequestPermission = findViewById(R.id.btnRequestPermission)
         btnEnableBluetooth = findViewById(R.id.btnEnableBluetooth)
@@ -48,6 +54,9 @@ open class MainActivity : AppCompatActivity() {
         btnStartActivityDialogPermission = findViewById(R.id.btnStartActivityDialogPermission)
         btnShowDialog.setOnClickListener {
             showConfirmationDialog()
+        }
+        btnShowTwoDialogs.setOnClickListener {
+            showTwoDialogs()
         }
         btnToastMessage.setOnClickListener {
             Toasty.info(this, "Hello world", Toasty.LENGTH_LONG).show()
@@ -102,5 +111,18 @@ open class MainActivity : AppCompatActivity() {
 
     fun showConfirmationDialog() {
         ConfirmationDialogFragment().show(supportFragmentManager, ConfirmationDialogFragment.TAG)
+    }
+
+    private fun showTwoDialogs() {
+        Log.d(TAG, "show first dialog")
+        showConfirmationDialog()
+        mainHandler.postDelayed({
+            Log.d(TAG, "show second dialog")
+            showConfirmationDialog()
+        }, 1000)
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }

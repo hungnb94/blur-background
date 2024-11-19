@@ -1,78 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/main"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="16dp"
+	tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvMessage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?selectableItemBackground"
-        android:gravity="center"
-        android:text="The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog"
-        android:textSize="45sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+	<TextView
+		android:id="@+id/tvMessage"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="?selectableItemBackground"
+		android:gravity="center"
+		android:text="The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog"
+		android:textSize="45sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnShowDialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnToastMessage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Show dialog" />
+	<Button
+		android:id="@+id/btnShowDialog"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnShowTwoDialogs"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Show dialog" />
 
-    <Button
-        android:id="@+id/btnToastMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnRequestPermission"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Show toast message" />
+	<Button
+		android:id="@+id/btnShowTwoDialogs"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnToastMessage"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Show 2 dialogs" />
 
-    <Button
-        android:id="@+id/btnRequestPermission"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnEnableBluetooth"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Request permission" />
+	<Button
+		android:id="@+id/btnToastMessage"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnRequestPermission"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Show toast message" />
 
-    <Button
-        android:id="@+id/btnEnableBluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnStartActivityDialog"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Enable bluetooth" />
+	<Button
+		android:id="@+id/btnRequestPermission"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnEnableBluetooth"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Request permission" />
 
-    <Button
-        android:id="@+id/btnStartActivityDialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/btnStartActivityDialogPermission"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Start activity with dialog after 2s" />
+	<Button
+		android:id="@+id/btnEnableBluetooth"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnStartActivityDialog"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Enable bluetooth" />
 
-    <Button
-        android:id="@+id/btnStartActivityDialogPermission"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="Start activity with dialog + request permission after 2s" />
+	<Button
+		android:id="@+id/btnStartActivityDialog"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/btnStartActivityDialogPermission"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Start activity with dialog after 2s" />
+
+	<Button
+		android:id="@+id/btnStartActivityDialogPermission"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="10dp"
+		android:text="Start activity with dialog + request permission after 2s" />
 
 </RelativeLayout>
